@@ -1,4 +1,6 @@
+import ActivityReminders.ActivityRemindersController;
 import Milestones.MilestoneListController;
+import Saving.Saveable;
 import ToDoList.ToDoListController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -7,58 +9,47 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Pagination;
 
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainWindowController {
 
     private List<Node> pages;
-    private ToDoListController todoController;
-    private MilestoneListController milestoneController;
+    private List<Saveable> controllers;
 
     @FXML
     private Pagination contents;
 
     public MainWindowController() {
-        pages = new ArrayList<>();
+        this.pages = new ArrayList<>();
+        this.controllers = new ArrayList<>();
         try {
             FXMLLoader loader1 = new FXMLLoader(this.getClass().getResource("/todopage.fxml"));
-            pages.add(loader1.load());
-            todoController = loader1.getController();
+            this.pages.add(loader1.load());
+            ToDoListController controller1 = loader1.getController();
+            this.controllers.add(controller1);
             FXMLLoader loader2 = new FXMLLoader(this.getClass().getResource("/milestonepage.fxml"));
-            pages.add(loader2.load());
-            milestoneController = loader2.getController();
+            this.pages.add(loader2.load());
+            MilestoneListController controller2 = loader2.getController();
+            this.controllers.add(controller2);
+            FXMLLoader loader3 = new FXMLLoader(this.getClass().getResource("/activityreminderspage.fxml"));
+            this.pages.add(loader3.load());
+            ActivityRemindersController controller3 = loader3.getController();
+            this.controllers.add(controller3);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
     public void initialize() {
-        contents.setPageFactory(pages::get);
-        contents.setMaxPageIndicatorCount(pages.size());
-        contents.setPageCount(pages.size());
-        contents.setCurrentPageIndex(0);
+        this.contents.setPageFactory(pages::get);
+        this.contents.setMaxPageIndicatorCount(pages.size());
+        this.contents.setPageCount(pages.size());
+        this.contents.setCurrentPageIndex(0);
     }
 
-    public void saveChanges() {
-        switch (this.contents.getCurrentPageIndex()) {
-            case 0: {
-                try {
-                    Method m = this.todoController.getClass().getDeclaredMethod("saveTasksToFile");
-                    m.setAccessible(true);
-                    m.invoke(this.todoController);
-                    new Alert(Alert.AlertType.INFORMATION, "Changes saved successfully!").showAndWait();
-                } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-            }
-            break;
-            case 1: {
-
-            }
-            break;
-        }
+    public void saveChanges() throws IOException {
+        this.controllers.get(this.contents.getCurrentPageIndex()).saveChangesToFile();
+        new Alert(Alert.AlertType.INFORMATION, "Saved changes successfully!").showAndWait();
     }
 }

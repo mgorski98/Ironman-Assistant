@@ -32,4 +32,5 @@ public class Milestone {
     public void setMilestoneDate(LocalDate milestoneDate) {
         this.milestoneDate = milestoneDate;
     }
+
 }

@@ -1,23 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="480.0" prefWidth="825.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Milestones.MilestoneListController">
+<AnchorPane prefHeight="480.0" prefWidth="825.0" style="-fx-background-color: f4f4f4;" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Milestones.MilestoneListController">
    <children>
       <Label layoutX="30.0" layoutY="40.0" text="Milestones" />
-      <ListView layoutX="30.0" layoutY="59.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="520.0" AnchorPane.topAnchor="59.0" />
+      <ListView fx:id="milestoneListView" layoutX="30.0" layoutY="59.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="30.0" AnchorPane.rightAnchor="520.0" AnchorPane.topAnchor="59.0" />
       <AnchorPane layoutX="492.0" layoutY="59.0" prefHeight="200.0" prefWidth="200.0" style="-fx-border-color: black;" AnchorPane.bottomAnchor="40.0" AnchorPane.leftAnchor="492.0" AnchorPane.rightAnchor="60.0" AnchorPane.topAnchor="59.0">
          <children>
-            <Button layoutX="180.0" layoutY="336.0" mnemonicParsing="false" text="Button" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="340.0" />
-            <Button layoutX="14.0" layoutY="337.0" mnemonicParsing="false" text="Button" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="340.0" />
-            <TextField layoutX="11.0" layoutY="49.0" AnchorPane.bottomAnchor="307.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="15.0" AnchorPane.topAnchor="49.0" />
+            <Button fx:id="clearButton" layoutX="180.0" layoutY="336.0" mnemonicParsing="false" text="Clear" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="150.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="340.0" />
+            <Button fx:id="addMilestoneButton" layoutX="14.0" layoutY="337.0" mnemonicParsing="false" text="Add milestone" AnchorPane.bottomAnchor="15.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="150.0" AnchorPane.topAnchor="340.0">
+               <font>
+                  <Font size="13.0" />
+               </font></Button>
+            <TextField fx:id="milestoneTextField" layoutX="10.0" layoutY="50.0" AnchorPane.bottomAnchor="308.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="17.0" AnchorPane.topAnchor="50.0" />
             <Label layoutX="11.0" layoutY="29.0" text="Milestone " />
-            <TextField layoutX="11.0" layoutY="115.0" prefHeight="31.0" prefWidth="246.0" AnchorPane.rightAnchor="17.0" />
-            <Label layoutX="11.0" layoutY="94.0" text="Total level" />
+            <TextField fx:id="milestoneTotalLevelTextField" layoutX="11.0" layoutY="141.0" prefHeight="31.0" prefWidth="246.0" AnchorPane.bottomAnchor="220.0" AnchorPane.leftAnchor="11.0" AnchorPane.rightAnchor="18.0" AnchorPane.topAnchor="141.0" />
+            <Label layoutX="11.0" layoutY="119.0" text="Total level" />
+            <DatePicker fx:id="datepicker" layoutX="13.0" layoutY="237.0" prefHeight="34.0" prefWidth="240.0" AnchorPane.bottomAnchor="124.0" AnchorPane.leftAnchor="12.0" AnchorPane.rightAnchor="21.0" AnchorPane.topAnchor="236.0" />
+            <Label layoutX="13.0" layoutY="210.0" text="Milestone date" />
          </children>
       </AnchorPane>
       <Label layoutX="492.0" layoutY="40.0" style="-fx-background-color: f4f4f4;" text="Milestone info" translateX="10.0" translateY="10.0" />

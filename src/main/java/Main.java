@@ -7,6 +7,8 @@ import javafx.scene.input.KeyCodeCombination;
 import javafx.scene.input.KeyCombination;
 import javafx.stage.Stage;
 
+import java.io.IOException;
+
 
 public class Main extends javafx.application.Application {
 
@@ -17,7 +19,13 @@ public class Main extends javafx.application.Application {
         Parent p = loader.load();
         MainWindowController controller = loader.getController();
         Scene s = new Scene(p);
-        s.getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN), controller::saveChanges);
+        s.getAccelerators().put(new KeyCodeCombination(KeyCode.S, KeyCombination.CONTROL_DOWN), () -> {
+            try {
+                controller.saveChanges();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
         primaryStage.setScene(s);
         primaryStage.show();
     }

@@ -1,5 +1,6 @@
 package ToDoList;
 
+import Saving.Saveable;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
@@ -16,9 +17,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 //TODO: add another treeview to show finished tasks
-public class ToDoListController {
+public class ToDoListController implements Saveable {
 
     private static Map<TaskPriority, Color> priorityColors;
 
@@ -52,9 +54,14 @@ public class ToDoListController {
 
     public void initialize() {
         this.setTreeViewProperties();
+        this.setFinishedTasksViewProperties();
         this.fillPriorityCombobox();
         this.setButtonDelegates();
-        this.loadAndSetTreeValues();
+        try {
+            this.loadTasksFromFile();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private void setTreeViewProperties() {
@@ -92,6 +99,21 @@ public class ToDoListController {
         });
     }
 
+    private void setFinishedTasksViewProperties() {
+        this.finishedTasksTreeView.setRoot(new TreeItem<>());
+        this.finishedTasksTreeView.setShowRoot(false);
+        this.finishedTasksTreeView.setCellFactory(p -> new TreeCell<ToDoTask>() {
+            @Override
+            public void updateItem(ToDoTask item, boolean empty) {
+                super.updateItem(item, empty);
+                if (!isEmpty()) {
+                    this.setText(this.getItem().getTaskDescription());
+                    this.setTextFill(priorityColors.get(this.getItem().getPriority()));
+                }
+            }
+        });
+    }
+
     private void setButtonDelegates() {
         this.clearButton.setOnAction(event -> {
             this.clearInputs();
@@ -104,17 +126,6 @@ public class ToDoListController {
         this.taskDescriptionTextField.setText("");
         this.additionalInfoTextArea.setText("");
         this.taskTreeView.getSelectionModel().clearSelection();
-    }
-
-    private void loadAndSetTreeValues() {
-        try {
-            List<ToDoTask> tasks = this.loadTasksFromFile();
-            Platform.runLater(() -> {
-                this.setUpTree(this.taskTreeView.getRoot(), tasks);
-            });
-        } catch (IOException e) {
-            new Alert(Alert.AlertType.ERROR, "Could not find tasks.json file.").showAndWait();
-        } catch (ConcurrentModificationException ignored) { }
     }
 
     private void addTask() {
@@ -182,32 +193,70 @@ public class ToDoListController {
             if (task.getCompletionDate().isPresent()) {
                 item.setSelected(true);
             }
-            //TODO: if the checked node's parent is root -> move it and its child nodes to finished tasks
             item.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue) {
                     if (task.getCompletionDate().isPresent()) return;
                     task.setCompletionDate(Optional.of(LocalDateTime.now()));
+                    //if root is this item's parent
+                    if (item.getParent() == this.taskTreeView.getRoot()) {
+                        TreeItem<ToDoTask> taskTreeItem = new TreeItem<>(item.getValue());
+                        this.fillChildren(item, taskTreeItem);
+                        this.finishedTasksTreeView.getRoot().getChildren().add(taskTreeItem);
+                        this.taskTreeView.getRoot().getChildren().remove(item);
+                    }
                 }
             });
             setUpTree(item, task.getRequirements());
         });
     }
 
-    private List<ToDoTask> loadTasksFromFile() throws IOException {
+    private void fillChildren(TreeItem<ToDoTask> source, TreeItem<ToDoTask> destination) {
+        source.getChildren().forEach(treeitem -> {
+            TreeItem<ToDoTask> item = new TreeItem<>(treeitem.getValue());
+            destination.getChildren().add(item);
+            fillChildren(treeitem, item);
+        });
+    }
+
+    private void setUpFinishedTasksTree(TreeItem<ToDoTask> root, List<ToDoTask> tasks) {
+        tasks.forEach(task -> {
+            TreeItem<ToDoTask> item = new TreeItem<>(task);
+            root.getChildren().add(item);
+            setUpFinishedTasksTree(item, task.getRequirements());
+        });
+    }
+
+    private void loadTasksFromFile() throws IOException {
         String path = System.getProperty("user.dir") + File.separator + "Data/tasks.json";
         List<String> lines = Files.readAllLines(Paths.get(path));
         String json = String.join("\n", lines);
+
         Type t = new TypeToken<List<ToDoTask>>() {}.getType();
-        return new Gson().fromJson(json, t);
+        List<ToDoTask> tasks = new Gson().fromJson(json, t);
+
+        //split the list into two: one with completed, one with incomplete tasks
+        Predicate<ToDoTask> completedPredicate = task -> task.getCompletionDate().isPresent();
+        List<ToDoTask> completed = tasks.stream().filter(completedPredicate).collect(Collectors.toList());
+        List<ToDoTask> incomplete = tasks.stream().filter(completedPredicate.negate()).collect(Collectors.toList());
+
+
+        Platform.runLater(() -> {
+            this.setUpTree(this.taskTreeView.getRoot(), incomplete);
+        });
+
+        Platform.runLater(() -> {
+            this.setUpFinishedTasksTree(this.finishedTasksTreeView.getRoot(), completed);
+        });
     }
 
     private List<ToDoTask> collectTasks() {
-        return this.taskTreeView.
-                getRoot().
-                getChildren().
-                stream().
-                map(TreeItem::getValue).
-                collect(Collectors.toList());
+        //collect finished and unfinished and put them in a single list
+        List<ToDoTask> tasks = new ArrayList<>();
+        List<ToDoTask> finished = this.finishedTasksTreeView.getRoot().getChildren().stream().map(TreeItem::getValue).collect(Collectors.toList());
+        List<ToDoTask> unfinished = this.taskTreeView.getRoot().getChildren().stream().map(TreeItem::getValue).collect(Collectors.toList());
+        tasks.addAll(finished);
+        tasks.addAll(unfinished);
+        return tasks;
     }
 
     private void saveTasksToFile() throws IOException {
@@ -216,5 +265,10 @@ public class ToDoListController {
         List<ToDoTask> tasks = this.collectTasks();
         String json = g.toJson(tasks);
         Files.write(Paths.get(path), json.getBytes());
+    }
+
+    @Override
+    public void saveChangesToFile() throws IOException {
+        this.saveTasksToFile();
     }
 }
