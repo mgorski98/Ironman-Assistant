@@ -1,11 +1,11 @@
 package Milestones;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Milestone {
     private String milestoneInfo;
     private int totalLevel;
-    private LocalDateTime milestoneDate;
+    private LocalDate milestoneDate;
 
     public Milestone() {}
 
@@ -25,11 +25,11 @@ public class Milestone {
         this.totalLevel = totalLevel;
     }
 
-    public LocalDateTime getMilestoneDate() {
+    public LocalDate getMilestoneDate() {
         return milestoneDate;
     }
 
-    public void setMilestoneDate(LocalDateTime milestoneDate) {
+    public void setMilestoneDate(LocalDate milestoneDate) {
         this.milestoneDate = milestoneDate;
     }
 }

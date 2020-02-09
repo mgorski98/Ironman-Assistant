@@ -17,7 +17,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
-
+//TODO: add another treeview to show finished tasks
 public class ToDoListController {
 
     private static Map<TaskPriority, Color> priorityColors;
@@ -32,6 +32,8 @@ public class ToDoListController {
 
     @FXML
     private TreeView<ToDoTask> taskTreeView;
+    @FXML
+    private TreeView<ToDoTask> finishedTasksTreeView;
 
     @FXML
     private TextField taskDescriptionTextField;
@@ -180,6 +182,7 @@ public class ToDoListController {
             if (task.getCompletionDate().isPresent()) {
                 item.setSelected(true);
             }
+            //TODO: if the checked node's parent is root -> move it and its child nodes to finished tasks
             item.selectedProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue) {
                     if (task.getCompletionDate().isPresent()) return;
