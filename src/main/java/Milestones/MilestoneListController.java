@@ -90,8 +90,8 @@ public class MilestoneListController implements Saveable {
     private Milestone getMilestoneFromGUI() {
         Milestone m = new Milestone();
         m.setMilestoneDate(this.datepicker.getValue());
-        m.setMilestoneInfo(this.milestoneTextField.getText());
-        int level = Integer.parseInt(this.milestoneTotalLevelTextField.getText());
+        m.setMilestoneInfo(this.milestoneTextField.getText().trim());
+        int level = Integer.parseInt(this.milestoneTotalLevelTextField.getText().trim());
         m.setTotalLevel(level);
         return m;
     }

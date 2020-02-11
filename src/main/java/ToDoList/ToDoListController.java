@@ -139,25 +139,43 @@ public class ToDoListController implements Saveable {
         }
         String additionalInfo = this.additionalInfoTextArea.getText();
         TaskPriority priority = this.taskPriorityComboBox.getSelectionModel().getSelectedItem();
+
+        //if there already is that task in the tree
+        if (this.taskTreeView.getRoot().getChildren().stream().anyMatch(i -> i.getValue().getTaskDescription().equals(taskDescription))) {
+            new Alert(Alert.AlertType.WARNING, String.format("Task \"%s\" already exists.", taskDescription)).showAndWait();
+            return;
+        }
+
         ToDoTask task = new ToDoTask();
         task.setPriority(priority);
         task.setTaskDescription(taskDescription);
         task.setAdditionalInfo(additionalInfo);
+
         CheckBoxTreeItem<ToDoTask> taskCheckBox = new CheckBoxTreeItem<>(task);
         taskCheckBox.setIndependent(true);
         taskCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 if (task.getCompletionDate().isPresent()) return;
                 task.setCompletionDate(Optional.of(LocalDateTime.now()));
+                //if root is this item's parent
+                if (taskCheckBox.getParent() == this.taskTreeView.getRoot()) {
+                    TreeItem<ToDoTask> taskTreeItem = new TreeItem<>(taskCheckBox.getValue());
+                    this.fillChildren(taskCheckBox, taskTreeItem);
+                    this.finishedTasksTreeView.getRoot().getChildren().add(taskTreeItem);
+                    this.taskTreeView.getRoot().getChildren().remove(taskCheckBox);
+                }
             }
         });
+
         TreeItem<ToDoTask> item = this.taskTreeView.getSelectionModel().getSelectedItem();
         Comparator<TreeItem<ToDoTask>> treeSortComparator = Comparator.
-                comparing((TreeItem<ToDoTask> treeitem) -> treeitem.getValue().getPriority()).reversed();
+                comparing((TreeItem<ToDoTask> treeitem) -> treeitem.getValue().getPriority()).
+                reversed().
+                thenComparing((TreeItem<ToDoTask> treeitem) -> treeitem.getValue().getTaskDescription());
+
         if (item != null) {
+            item.getValue().addRequirement(task);
             item.getChildren().add(taskCheckBox);
-            ToDoTask toDoTask = item.getValue();
-            toDoTask.addRequirement(task);
             item.setExpanded(true);
             item.getChildren().sort(treeSortComparator);
         } else {
@@ -165,6 +183,7 @@ public class ToDoListController implements Saveable {
             root.getChildren().add(taskCheckBox);
             root.getChildren().sort(treeSortComparator);
         }
+
         this.clearInputs();
     }
 
