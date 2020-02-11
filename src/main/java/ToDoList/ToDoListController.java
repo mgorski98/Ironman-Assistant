@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
-//TODO: add another treeview to show finished tasks
+
 public class ToDoListController implements Saveable {
 
     private static Map<TaskPriority, Color> priorityColors;
@@ -53,7 +53,7 @@ public class ToDoListController implements Saveable {
     private TabPane tabpane;
 
     public void initialize() {
-        this.setTreeViewProperties();
+        this.setTaskTreeViewProperties();
         this.setFinishedTasksViewProperties();
         this.fillPriorityCombobox();
         this.setButtonDelegates();
@@ -64,7 +64,7 @@ public class ToDoListController implements Saveable {
         }
     }
 
-    private void setTreeViewProperties() {
+    private void setTaskTreeViewProperties() {
         //set cell factory to checkbox
         this.taskTreeView.setCellFactory(p -> new CheckBoxTreeCell<ToDoTask>() {
             @Override
@@ -115,9 +115,7 @@ public class ToDoListController implements Saveable {
     }
 
     private void setButtonDelegates() {
-        this.clearButton.setOnAction(event -> {
-            this.clearInputs();
-        });
+        this.clearButton.setOnAction(event -> this.clearInputs());
         this.addTaskButton.setOnAction(event -> this.addTask());
     }
 
@@ -130,6 +128,7 @@ public class ToDoListController implements Saveable {
 
     private void addTask() {
         String taskDescription = this.taskDescriptionTextField.getText();
+        //if user had input only white spaces or hasnt input anything
         if (taskDescription.trim().isEmpty()) {
             Platform.runLater(() -> {
                 Alert alert = new Alert(Alert.AlertType.WARNING, "Please input a valid task");
@@ -168,23 +167,24 @@ public class ToDoListController implements Saveable {
         });
 
         TreeItem<ToDoTask> item = this.taskTreeView.getSelectionModel().getSelectedItem();
+        //sorting criteria, first compare using priority, then by using the task description
         Comparator<TreeItem<ToDoTask>> treeSortComparator = Comparator.
                 comparing((TreeItem<ToDoTask> treeitem) -> treeitem.getValue().getPriority()).
                 reversed().
                 thenComparing((TreeItem<ToDoTask> treeitem) -> treeitem.getValue().getTaskDescription());
 
-        if (item != null) {
+        if (item != null) { //means we have something selected
             item.getValue().addRequirement(task);
             item.getChildren().add(taskCheckBox);
             item.setExpanded(true);
             item.getChildren().sort(treeSortComparator);
-        } else {
+        } else { //if it is null then add to root
             TreeItem<ToDoTask> root = this.taskTreeView.getRoot();
             root.getChildren().add(taskCheckBox);
             root.getChildren().sort(treeSortComparator);
         }
 
-        this.clearInputs();
+        this.clearInputs();//clear user inputs, together with selection
     }
 
     private void fillPriorityCombobox() {
