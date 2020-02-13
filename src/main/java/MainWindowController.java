@@ -1,7 +1,4 @@
-import ActivityReminders.ActivityRemindersController;
-import Milestones.MilestoneListController;
 import Saving.Saveable;
-import ToDoList.ToDoListController;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -18,8 +15,10 @@ public class MainWindowController {
     private List<Node> pages;
     private List<Saveable> controllers;
 
+
     @FXML
     private Pagination contents;
+
 
     public MainWindowController() {
         this.initializeComponentLists();
@@ -55,21 +54,5 @@ public class MainWindowController {
                 e.printStackTrace();
             }
         });
-//        try {
-//            FXMLLoader loader1 = new FXMLLoader(this.getClass().getResource("/todopage.fxml"));
-//            this.pages.add(loader1.load());
-//            ToDoListController controller1 = loader1.getController();
-//            this.controllers.add(controller1);
-//            FXMLLoader loader2 = new FXMLLoader(this.getClass().getResource("/milestonepage.fxml"));
-//            this.pages.add(loader2.load());
-//            MilestoneListController controller2 = loader2.getController();
-//            this.controllers.add(controller2);
-//            FXMLLoader loader3 = new FXMLLoader(this.getClass().getResource("/activityreminderspage.fxml"));
-//            this.pages.add(loader3.load());
-//            ActivityRemindersController controller3 = loader3.getController();
-//            this.controllers.add(controller3);
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 }
