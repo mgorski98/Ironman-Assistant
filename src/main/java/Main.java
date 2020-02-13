@@ -2,6 +2,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
@@ -9,7 +10,7 @@ public class Main extends javafx.application.Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        Parent p = FXMLLoader.load(this.getClass().getResource("/splashscreen.fxml"));
+        VBox p = FXMLLoader.load(this.getClass().getResource("/FXML/splashscreen.fxml"));
         Scene s = new Scene(p);
         primaryStage.initStyle(StageStyle.UNDECORATED);
         primaryStage.setScene(s);

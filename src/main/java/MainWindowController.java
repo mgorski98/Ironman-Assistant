@@ -40,9 +40,9 @@ public class MainWindowController {
         this.pages = new ArrayList<>();
         this.controllers = new ArrayList<>();
         List<String> paths = Arrays.asList(
-                "/todopage.fxml",
-                "/milestonepage.fxml",
-                "/activityreminderspage.fxml"
+                "/FXML/todopage.fxml",
+                "/FXML/milestonepage.fxml",
+                "/FXML/activityreminderspage.fxml"
         );
         paths.forEach(path -> {
             try {
