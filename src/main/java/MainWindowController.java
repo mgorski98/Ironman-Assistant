@@ -55,4 +55,8 @@ public class MainWindowController {
             }
         });
     }
+
+    public List<Saveable> getPageControllers() {
+        return this.controllers;
+    }
 }

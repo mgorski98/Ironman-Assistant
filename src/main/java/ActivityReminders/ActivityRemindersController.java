@@ -5,12 +5,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Accordion;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TitledPane;
-import javafx.scene.layout.Pane;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -31,12 +28,15 @@ public class ActivityRemindersController implements Saveable {
         accordion.getPanes().clear();
 
         List<String> paneTitles = Stream.of(
-                "Distractions and diversions"
+                "Distractions and diversions",
+                "Shop runs",
+                "Others"
         ).sorted().collect(Collectors.toList());
 
         paneTitles.forEach(title -> {
             ListView<Activity> activities = new ListView<>();
             TitledPane pane = new TitledPane(title, activities);
+            pane.setContent(activities);
             accordion.getPanes().add(pane);
         });
     }

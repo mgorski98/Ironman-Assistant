@@ -3,6 +3,8 @@ import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
@@ -13,7 +15,9 @@ import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Optional;
 
+//TODO: add classes for ability to create profiles and create a file to store them
 public class SplashScreenController {
 
     @FXML
@@ -67,6 +71,20 @@ public class SplashScreenController {
             mainWindow.setScene(s);
             mainWindow.setTitle("Ironman Assistant");
             mainWindow.getIcons().add(new Image(this.getClass().getResource("/Images/applogo.png").toExternalForm()));
+            mainWindow.setOnCloseRequest(event -> {
+                Alert closingAlert = new Alert(Alert.AlertType.CONFIRMATION, "Do you want to save the changes from all the pages?");
+                Optional<ButtonType> confirmationResult = closingAlert.showAndWait();
+                confirmationResult.ifPresent(result -> {
+                    controller.getPageControllers().forEach(c -> {
+                        try {
+                            c.saveChangesToFile();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            //stop here, handle it in some other way
+                        }
+                    });
+                });
+            });
             mainWindow.show();
             this.rootContainer.getScene().getWindow().hide();
         });
